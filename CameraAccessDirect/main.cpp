@@ -56,7 +56,7 @@ int main() {
 	//dataset
 	deserialize("shape_predictor_68_face_landmarks.dat") >> sp;
 
-	
+	//ハイスピードカメラの時
 	if (CAMERA_MODE) {
 		/*
 		FaceTracker facetracker(cam);
@@ -72,28 +72,30 @@ int main() {
 		*/
 	}
 
-
+//webカメラ
 	else {
-
+		// camera open
 		if (!cap.isOpened())
 		{
 			cerr << "Unable to connect to camera" << endl;
 		}
 
 		FaceTracker facetracker;
-
+		//input thread
 		std::thread camera([&] {
 			while (1) {
 				
 				cap.read(img);
 			};
 		});
+		//tracking thread
 		std::thread tracking([&]{
 			while (1) {
 				if (img.data != NULL) facetracker.face_tracking(img, sp, detector,p);
 			}
 			
 		});
+		//out put thread
 		while (1) {
 			if (facetracker.ok) {
 				
